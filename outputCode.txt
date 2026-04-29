@@ -1,0 +1,70 @@
+import streamlit as st
+from PIL import Image, ImageFilter
+import os
+
+# 1. НАСТРОЙКИ СТРАНИЦЫ
+st.set_page_config(page_title="Bilelikde", page_icon="❤️")
+
+# Кастомный дизайн
+st.markdown("""
+    <style>
+    .stApp { background-color: #fcf8f8; }
+    h1 { color: #b71c1c; text-align: center; font-family: 'Times New Roman', serif; letter-spacing: 2px; }
+    .stAlert { border-radius: 15px; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# 2. ВАШЕ ОБЩЕЕ ФОТО (ЛОГОТИП)
+if os.path.exists("we.jpg"):
+    st.image("we.jpg", use_column_width=True)
+else:
+    st.info("📸 Загрузи файл we.jpg на GitHub, чтобы здесь появилось ваше фото!")
+
+# НАЗВАНИЕ ПРИЛОЖЕНИЯ
+st.markdown("<h1>BILELIKDE</h1>", unsafe_allow_html=True)
+
+# 3. ТЕМА ДНЯ
+st.subheader("📍 Тема: Бокал сверху")
+
+# Инициализация памяти приложения
+if 'photo_1' not in st.session_state: st.session_state.photo_1 = None
+if 'photo_2' not in st.session_state: st.session_state.photo_2 = None
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.write("🤵 **Муж**")
+    if st.session_state.photo_1 is None:
+        file1 = st.file_uploader("Загрузить", key="file1")
+        if file1: 
+            st.session_state.photo_1 = file1
+            st.experimental_rerun()
+    else:
+        img1 = Image.open(st.session_state.photo_1)
+        if st.session_state.photo_2 is None:
+            st.image(img1.filter(ImageFilter.GaussianBlur(radius=25)), caption="Ждем жену...")
+        else:
+            st.image(img1)
+
+with col2:
+    st.write("👰 **Жена**")
+    if st.session_state.photo_2 is None:
+        file2 = st.file_uploader("Загрузить", key="file2")
+        if file2: 
+            st.session_state.photo_2 = file2
+            st.experimental_rerun()
+    else:
+        img2 = Image.open(st.session_state.photo_2)
+        if st.session_state.photo_1 is None:
+            st.image(img2.filter(ImageFilter.GaussianBlur(radius=25)), caption="Ждем мужа...")
+        else:
+            st.image(img2)
+
+# 4. РЕЗУЛЬТАТ
+if st.session_state.photo_1 and st.session_state.photo_2:
+    st.balloons()
+    st.success("✨ Наш общий момент готов!")
+    if st.button("Сделать новый пазл"):
+        st.session_state.photo_1 = None
+        st.session_state.photo_2 = None
+        st.experimental_rerun()
